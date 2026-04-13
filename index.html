@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>City Administrator Org Chart Explorer</title>
+  <style>
+    :root{--bg:#eef4f3;--surface:#fff;--ink:#20262e;--muted:#5b6571;--line:#cbd7d4;--accent:#007c89;--accent2:#c43d4b;--shadow:0 14px 34px rgba(32,38,46,.12)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Aptos,Segoe UI,Arial,sans-serif;color:var(--ink);background:linear-gradient(90deg,rgba(0,124,137,.08) 1px,transparent 1px),linear-gradient(0deg,rgba(196,61,75,.06) 1px,transparent 1px),var(--bg);background-size:48px 48px}button,input{font:inherit}button,a{border-radius:8px}.shell{width:min(1440px,calc(100% - 32px));margin:0 auto;padding:24px 0 36px}.mast{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:18px 0 22px}.eyebrow{margin:0 0 8px;color:#005a63;font-size:.8rem;font-weight:800;text-transform:uppercase}h1,h2,p{margin:0}h1{font-size:clamp(2.1rem,5vw,3rem);line-height:1}h2{font-size:1.35rem;line-height:1.2}.lede{max-width:780px;margin-top:10px;color:var(--muted);line-height:1.5}.source,.viewer-actions a{display:inline-flex;min-height:40px;align-items:center;justify-content:center;padding:0 14px;background:var(--ink);color:#fff;font-weight:800;text-decoration:none;white-space:nowrap}.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}.summary article,.controls,.list,.viewer{border:1px solid var(--line);border-radius:8px;background:var(--surface);box-shadow:var(--shadow)}.summary article{min-height:102px;padding:16px}.summary span{display:block;color:var(--muted);font-size:.82rem;font-weight:800;text-transform:uppercase}.summary strong{display:block;margin-top:12px;color:#005a63;font-size:1.65rem;line-height:1.1}.controls{display:grid;grid-template-columns:minmax(280px,.7fr) minmax(0,1.3fr);gap:18px;padding:14px;margin-bottom:14px}.search,.filter{display:grid;gap:8px}.search span,.filter>span{color:var(--muted);font-size:.82rem;font-weight:800;text-transform:uppercase}input[type=search]{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;padding:0 12px;color:var(--ink);background:#f9fbfb}.filters{display:flex;flex-wrap:wrap;gap:8px}.filters button,.viewer-actions button{min-height:40px;border:1px solid var(--line);padding:0 12px;background:#f9fbfb;color:var(--ink);cursor:pointer;font-weight:800}.filters button.active,.filters button:hover,.viewer-actions button:hover{border-color:var(--accent);background:var(--accent);color:#fff}.workspace{display:grid;grid-template-columns:minmax(320px,.36fr) minmax(0,1fr);gap:14px;align-items:start}.list{position:sticky;top:16px;overflow:hidden}.list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border-bottom:1px solid var(--line)}.list-head span{color:var(--muted);font-size:.92rem}.list-scroll{max-height:min(740px,calc(100vh - 260px));overflow:auto;padding:10px}.row{display:block;width:100%;border:1px solid transparent;padding:12px;background:transparent;color:var(--ink);cursor:pointer;text-align:left}.row+.row{margin-top:8px}.row:hover,.row.active{border-color:var(--accent);background:#e6f5f3}.row strong,.row small{display:block}.row strong{line-height:1.25}.row small{margin-top:5px;color:var(--muted);line-height:1.35}.viewer{overflow:hidden}.viewer-head{display:flex;align-items:end;justify-content:space-between;gap:18px;padding:14px;border-bottom:1px solid var(--line)}.viewer-meta{margin-top:8px;color:var(--muted);line-height:1.45}.viewer-actions{display:flex;flex-wrap:wrap;justify-content:end;gap:8px}.viewer-actions a{background:var(--accent2)}.stage{height:calc(100vh - 250px);min-height:560px;overflow:hidden;background:#dbe6e3}.stage iframe{display:block;width:100%;height:100%;border:0;background:#fff}.empty{padding:20px;border:1px dashed var(--line);border-radius:8px;background:#f9fbfb}.empty p{margin-top:8px;color:var(--muted)}@media(max-width:1080px){.summary,.controls,.workspace{grid-template-columns:1fr}.list{position:static}.list-scroll{max-height:420px}.viewer-head,.mast{align-items:flex-start;flex-direction:column}.viewer-actions{justify-content:flex-start}}@media(max-width:640px){.shell{width:min(100% - 20px,1440px);padding-top:14px}.stage{min-height:420px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="mast">
+      <div>
+        <p class="eyebrow">City Administrator's Office</p>
+        <h1>Org chart explorer</h1>
+        <p class="lede">FY27 and FY28 budget submission pages 60-86, organized for fast scanning across divisions, programs, and service groups.</p>
+      </div>
+      <a class="source" href="https://media.api.sf.gov/documents/City_Administrator_Budget_Submission_FY27_and_FY28.pdf" target="_blank" rel="noreferrer">Open source PDF</a>
+    </header>
+    <section class="summary" aria-label="Org chart summary">
+      <article><span>Total charts</span><strong id="stat-total">0</strong></article>
+      <article><span>Source pages</span><strong>60-86</strong></article>
+      <article><span>Largest group</span><strong id="stat-largest">-</strong></article>
+      <article><span>Selected page</span><strong id="stat-selected">-</strong></article>
+    </section>
+    <section class="controls" aria-label="Dashboard controls">
+      <label class="search"><span>Search charts</span><input id="search" type="search" placeholder="Try Real Estate, Fleet, Digital Services..." autocomplete="off"></label>
+      <div class="filter"><span>Group</span><div id="filters" class="filters"></div></div>
+    </section>
+    <section class="workspace">
+      <aside class="list" aria-label="Org chart list"><div class="list-head"><h2>Charts</h2><span id="count">0 results</span></div><div id="list" class="list-scroll"></div></aside>
+      <section class="viewer" aria-label="Selected org chart">
+        <div class="viewer-head"><div><p id="group" class="eyebrow">Group</p><h2 id="title">Select a chart</h2><p id="meta" class="viewer-meta"></p></div><div class="viewer-actions"><button id="prev" type="button">Previous</button><button id="next" type="button">Next</button><a id="pdf" href="#" target="_blank" rel="noreferrer">Open page</a></div></div>
+        <div class="stage"><iframe id="frame" title="Selected source PDF page"></iframe></div>
+      </section>
+    </section>
+  </main>
+  <script>
+    const sourceUrl='https://media.api.sf.gov/documents/City_Administrator_Budget_Submission_FY27_and_FY28.pdf';
+    const charts=[
+      {page:60,title:'311 Customer Service Center',group:'Public Service',focus:'Customer service operations and technical support',density:'High'},
+      {page:61,title:'Animal Care and Control',group:'Public Service',focus:'Shelter administration, field services, and veterinary teams',density:'High'},
+      {page:62,title:'City Administrator',group:'Executive and Administration',focus:'Department leadership, finance, analytics, and CAO technology',density:'High'},
+      {page:63,title:'Human Resources',group:'Executive and Administration',focus:'Human resources, payroll, safety, training, and analyst roles',density:'Medium'},
+      {page:64,title:'Real Estate Division - City Hall Events',group:'Real Estate',focus:'City Hall events and support staffing',density:'Low'},
+      {page:65,title:'Committee on Information Technology',group:'Technology and Data',focus:'COIT management and analyst support',density:'Low'},
+      {page:66,title:'Neighborhood Beautification',group:'Public Space',focus:'Neighborhood beautification program administration',density:'Low'},
+      {page:67,title:'Contract Monitoring',group:'Compliance and Oversight',focus:'Contract compliance, LBE support, and administrative roles',density:'Medium'},
+      {page:68,title:'Convention Facilities Management',group:'Facilities and Operations',focus:'Convention facilities leadership and analyst support',density:'Low'},
+      {page:69,title:'County Clerk',group:'Public Service',focus:'County Clerk leadership, legal process clerks, and technical support',density:'Medium'},
+      {page:70,title:'DataSF',group:'Technology and Data',focus:'Data engineering, principal business analysis, and platform support',density:'Low'},
+      {page:71,title:'Digital Services',group:'Technology and Data',focus:'Digital delivery teams, engineering, product, and public communications',density:'High'},
+      {page:72,title:'Entertainment Commission',group:'Public Service',focus:'Commission leadership and administrative analysis',density:'Low'},
+      {page:73,title:'Fleet Management',group:'Facilities and Operations',focus:'City Shops, mechanics, machinists, fleet analysts, and service workers',density:'High'},
+      {page:74,title:'Government Operations Recovery Initiative',group:'Executive and Administration',focus:'Recovery initiative analysts and management support',density:'Low'},
+      {page:75,title:'Office of Cannabis',group:'Public Service',focus:'Cannabis program management and policy analysts',density:'Low'},
+      {page:76,title:'Capital Planning',group:'Planning and Development',focus:'Capital planning leadership, analysts, and business systems support',density:'Low'},
+      {page:77,title:'Immigrant and Language Services',group:'Public Service',focus:'Community language access, civic engagement support, and trainee roles',density:'Medium'},
+      {page:78,title:'Office of Contract Administration - Procurement',group:'Compliance and Oversight',focus:'Procurement leadership, purchasers, clerical support, and analysts',density:'High'},
+      {page:79,title:'Labor Standards Enforcement',group:'Compliance and Oversight',focus:'Labor standards compliance officers, managers, and analysts',density:'High'},
+      {page:80,title:'Medical Examiner',group:'Public Safety and Health',focus:'Medical examiner leadership, forensic toxicology, morgue, and laboratory roles',density:'High'},
+      {page:81,title:'Real Estate Division - Custodial Services',group:'Real Estate',focus:'Custodial supervisors and custodial service teams',density:'Very high',imageOnly:true},
+      {page:82,title:'Real Estate Division - Engineering and Trades',group:'Real Estate',focus:'Stationary engineers, building and grounds maintenance, trades, and laborers',density:'Very high',imageOnly:true},
+      {page:83,title:'Real Estate Division - Property Management',group:'Real Estate',focus:'Property management officers, analysts, clerks, and administrative support',density:'Medium',imageOnly:true},
+      {page:84,title:'ReproMail',group:'Facilities and Operations',focus:'Mail, reproduction services, offset machine operators, clerks, and graphic support',density:'Medium'},
+      {page:85,title:'Risk Management',group:'Compliance and Oversight',focus:'Risk management leadership and analyst support',density:'Low'},
+      {page:86,title:'Treasure Island Development Authority',group:'Planning and Development',focus:'TIDA leadership, planning, real property, project management, and community development',density:'Medium'}
+    ];
+    const state={q:'',group:'All',page:60};
+    const $=id=>document.getElementById(id);
+    const groups=['All',...new Set(charts.map(c=>c.group))];
+    const norm=s=>String(s).toLowerCase().trim();
+    const selected=()=>charts.find(c=>c.page===state.page)||charts[0];
+    const filtered=()=>charts.filter(c=>(state.group==='All'||c.group===state.group)&&(!state.q||norm(`${c.title} ${c.group} ${c.focus} page ${c.page}`).includes(norm(state.q))));
+    function largest(){const counts=charts.reduce((m,c)=>(m[c.group]=(m[c.group]||0)+1,m),{});const top=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];return `${top[0]} (${top[1]})`}
+    function pageUrl(page){return `${sourceUrl}#page=${page}&zoom=page-width`}
+    function renderFilters(){ $('filters').innerHTML=groups.map(g=>`<button class="${g===state.group?'active':''}" data-group="${g}" type="button">${g}</button>`).join('') }
+    function renderList(){const rows=filtered();$('count').textContent=`${rows.length} ${rows.length===1?'result':'results'}`;$('list').innerHTML=rows.length?rows.map(c=>`<button class="row ${c.page===state.page?'active':''}" type="button" data-page="${c.page}"><strong>${c.title}</strong><small>Page ${c.page} - ${c.group} - ${c.density} detail</small></button>`).join(''):'<div class="empty"><strong>No matching charts</strong><p>Clear the search or pick another group.</p></div>'}
+    function renderSelected(){const c=selected();$('group').textContent=c.group;$('title').textContent=c.title;$('meta').textContent=`Page ${c.page} - ${c.focus}${c.imageOnly?' - image-only chart page':''}`;$('stat-selected').textContent=`Page ${c.page}`;$('pdf').href=pageUrl(c.page);$('frame').src=pageUrl(c.page)}
+    function render(){ $('stat-total').textContent=charts.length;$('stat-largest').textContent=largest();renderFilters();renderList();renderSelected() }
+    $('search').addEventListener('input',e=>{state.q=e.target.value;renderList()});
+    $('filters').addEventListener('click',e=>{const b=e.target.closest('[data-group]');if(!b)return;state.group=b.dataset.group;renderFilters();renderList()});
+    $('list').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(!b)return;state.page=Number(b.dataset.page);renderList();renderSelected()});
+    $('prev').addEventListener('click',()=>{const i=charts.findIndex(c=>c.page===state.page);state.page=charts[Math.max(0,i-1)].page;renderList();renderSelected()});
+    $('next').addEventListener('click',()=>{const i=charts.findIndex(c=>c.page===state.page);state.page=charts[Math.min(charts.length-1,i+1)].page;renderList();renderSelected()});
+    document.addEventListener('keydown',e=>{if(e.target===$('search'))return;if(e.key==='ArrowLeft')$('prev').click();if(e.key==='ArrowRight')$('next').click()});
+    render();
+  </script>
+</body>
+</html>
